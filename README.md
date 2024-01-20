@@ -1,40 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Запуск сервера
+Напрямую запустить сервер через MongoDB Compass у меня не получилось (да и вообще, можно ли?). Как я понял, Compass нужен только для просмотра и изменения данных. Запускать серверные операции он не может.
+Чтобы проект функционировал, нужно:
+1. Загрузить MongoDB Comunity Server, MongoDB Compass, MongoDB Shell.
+2. В MongoDB Compass создаются база MUF_2023 и коллекции days (импорт из файла csv) и Anomalies. Названия коллекций чувствительны к регистру.
+3. Сервер запускается при помощи `mongod` в `cmd`. Если появилось куча текста, а потом не даёт написать команду — значит всё правильно.
+4. Проверка работоспособности происходит в новом окне `cmd` с помощью `mongosh` и команды `db.days.find()`. Если `mongosh` не подключается автоматически, то можно подключиться по адресу `uri`
+5. Если данные отображаются, то можно работать с базами. Если не работают, то идти фиксить. Если возникает ошибка 500, то нужно в `loadMongoDB.js` заменить строку подключения `uri` с `localhost` на `127.0.0.1`
+После всех шагов можно пользоваться проектом по адресу `localhost:3000`
 
-## Getting Started
+## Пользование
+Запуск по `localhost:3000` в браузере.
 
-First, run the development server:
+Добавление, удаление, изненение данных об аномалиях можно посмотреть внутри MongoDB Compass, перезагружая коллекцию Anomalies вручную.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Добавление данных об аномалиях происходит так:
+1. Данные списка `ol` (muf и time) преобразуются в массив [muf: data, time: data]
+2. Массив сравнивается с коллекцией days
+3. Если запись совпадает, то заносим её в Anomalies вместе с оставшейся информацией
+4. Обновление данных (берутся из Anomalies)
+Код для get, update, delete немного отличаются (по понятным причинам, т.к. делают разные вещи), но в общем они все сравнивают значения из списка ol с базой данных.
